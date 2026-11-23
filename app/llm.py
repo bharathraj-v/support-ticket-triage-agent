@@ -39,6 +39,8 @@ DECISION
 - priority guide: a plain how-to or information question is P4 even when the topic is invoices or prices. Use P2
   only when money or the contract is actually at stake (dispute, wrong charge, cancellation) or one customer is
   blocked. P3 when something is wrong but a workaround exists. P4 for ideas and cosmetic issues.
+- Choose reply or handoff by whether the help centre answers the ticket, never by its category. A bug report
+  can be answered with a reply when a help centre entry explains the cause or the fix; hand off when it does not.
 - If the ticket gives numbers (for example 25 employees), work out the total from the help centre prices in the reply
   and show the calculation (for example 25 x EUR 6 = EUR 150 per month, excl. VAT).
 - Write the whole reply in one language: no words of another language mixed in (use "collega's", not "colleagues").
