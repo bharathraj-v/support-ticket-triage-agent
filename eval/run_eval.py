@@ -56,7 +56,8 @@ def main() -> None:
     s = load_settings()
     hc = load_helpcentre(s.faq_path)
     hd = Helpdesk(s.helpdesk_url, s.helpdesk_key, s.candidate_email)
-    llm = Llm(s.gemini_api_key, s.gemini_model, hc, cache_path=s.llm_cache_path)
+    llm = Llm(s.gemini_api_key, s.gemini_model, hc, cache_path=s.llm_cache_path,
+              min_interval=s.llm_min_interval)
     agent = Agent(hd, llm, hc, State(HERE / ".eval_state.json"), HERE / ".eval_log.jsonl",
                   s.confidence_threshold, not args.no_verify)
 

@@ -53,13 +53,17 @@ def finalize(subject: str, d: Decision, rules: RuleResult, hc: HelpCentre, thres
         elif contains_payment_details(reply):
             downgrades.append("payment_details_in_reply")
         elif reply_check is not None:
-            check = reply_check(d.language, faq_ids, reply, ticket_text)
-            problems = list(check.problems)
-            notes = list(check.problems) + ["back-translation: " + check.english_back_translation, "draft: " + reply]
-            if not check.written_in_expected_language:
-                downgrades.append("wrong_language")
-            if not check.supported_by_faq:
-                downgrades.append("reply_not_supported_by_faq")
+            try:
+                check = reply_check(d.language, faq_ids, reply, ticket_text)
+            except Exception:  # reviewer unavailable: an unverified reply is never sent
+                downgrades.append("reply_check_unavailable")
+            else:
+                problems = list(check.problems)
+                notes = problems + ["back-translation: " + check.english_back_translation, "draft: " + reply]
+                if not check.written_in_expected_language:
+                    downgrades.append("wrong_language")
+                if not check.supported_by_faq:
+                    downgrades.append("reply_not_supported_by_faq")
         if downgrades:
             action = "handoff"
 

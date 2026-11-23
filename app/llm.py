@@ -1,6 +1,7 @@
 """Gemini calls: one structured decision per ticket, and an independent reply check."""
 import hashlib
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -107,6 +108,9 @@ class Llm:
     helpcentre: HelpCentre
     usage: Usage = field(default_factory=Usage)
     cache_path: Path | None = None  # every finished call is appended here, so a rerun resumes
+    min_interval: float = 0.0       # seconds between real API calls (free tier allows ~15 per minute)
+    _sleep: object = time.sleep
+    _last_call: float = 0.0
     _client: object = None
     _cache: dict = field(default_factory=dict)
 
@@ -133,7 +137,22 @@ class Llm:
                 f.write(json.dumps(rec) + "\n")
                 f.flush()
 
-    def _generate(self, contents: str, system: str | None, schema, attempts: int = 4):
+    def _pace(self) -> None:
+        wait = self._last_call + self.min_interval - time.monotonic()
+        if wait > 0:
+            self._sleep(wait)
+        self._last_call = time.monotonic()
+
+    @staticmethod
+    def _retry_delay(exc: Exception) -> float | None:
+        """Seconds Google asks us to wait when we hit a rate limit, else None."""
+        text = str(exc)
+        if "429" not in text and "RESOURCE_EXHAUSTED" not in text:
+            return None
+        m = re.search(r"retry in ([\d.]+)s", text) or re.search(r"'retryDelay': '(\d+)s'", text)
+        return float(m.group(1)) + 1 if m else 30.0
+
+    def _generate(self, contents: str, system: str | None, schema, attempts: int = 6):
         key = self._key(contents, system, schema)
         if key in self._cache:
             self.usage.cache_hits += 1
@@ -143,16 +162,17 @@ class Llm:
             response_schema=schema, temperature=0)
         for attempt in range(1, attempts + 1):
             try:
+                self._pace()
                 resp = self._client.models.generate_content(model=self.model, contents=contents, config=config)
                 tokens = self.usage.add(resp)
                 if resp.parsed is None:
                     raise ValueError("model returned unparseable output")
                 self._save(key, resp.parsed, tokens)
                 return resp.parsed
-            except Exception:
+            except Exception as exc:
                 if attempt == attempts:
                     raise
-                time.sleep(min(10, 1.5 ** attempt))
+                self._sleep(self._retry_delay(exc) or min(10, 1.5 ** attempt))
 
     def decide(self, ticket: dict, redacted_subject: str, redacted_body: str) -> Decision:
         prompt = (

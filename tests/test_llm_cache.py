@@ -52,3 +52,27 @@ def test_corrupt_last_line_is_ignored(tmp_path):
     c2 = FakeClient()
     Llm("k", "m", HC, cache_path=cache, _client=c2).decide(T, "s", "b")
     assert c2.calls == 0
+
+
+def test_rate_limit_waits_for_the_delay_google_asks_for(tmp_path):
+    class Flaky(FakeClient):
+        def generate_content(self, model, contents, config):
+            if self.calls == 0:
+                self.calls += 1
+                raise RuntimeError("429 RESOURCE_EXHAUSTED ... Please retry in 39.9s.")
+            return super().generate_content(model, contents, config)
+    sleeps = []
+    llm = Llm("k", "m", HC, _client=Flaky(), _sleep=sleeps.append)
+    assert llm.decide(T, "s", "b") == D
+    assert any(s >= 40 for s in sleeps)
+
+
+def test_min_interval_spaces_real_calls_but_not_cache_hits(tmp_path):
+    sleeps = []
+    llm = Llm("k", "m", HC, cache_path=tmp_path / "c.jsonl", min_interval=5, _client=FakeClient(),
+              _sleep=sleeps.append)
+    llm.decide(T, "s", "b1")
+    llm.decide(T, "s", "b2")
+    n = len(sleeps)
+    llm.decide(T, "s", "b2")  # cached: no API call, no wait
+    assert n >= 1 and len(sleeps) == n

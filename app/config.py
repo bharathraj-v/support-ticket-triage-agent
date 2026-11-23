@@ -28,6 +28,7 @@ class Settings:
     log_path: Path
     faq_path: Path
     llm_cache_path: Path
+    llm_min_interval: float
 
 
 def load_settings(need_llm: bool = True) -> Settings:
@@ -42,4 +43,5 @@ def load_settings(need_llm: bool = True) -> Settings:
         log_path=ROOT / "logs" / "run.jsonl",
         faq_path=ROOT / "data" / "helpcentre.md",
         llm_cache_path=ROOT / "state" / "llm_cache.jsonl",
+        llm_min_interval=float(os.environ.get("LLM_MIN_INTERVAL_SECONDS", "4.5")),
     )

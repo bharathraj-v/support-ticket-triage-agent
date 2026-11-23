@@ -169,3 +169,12 @@ def test_rule_flagged_ticket_is_never_repaired(tmp_path):
     hd = FakeHd([{"id": "T9", "subject": "Terugbetaling", "body": "refund please"}])
     agent(tmp_path, hd, llm).run()
     assert hd.posts[0][0] == "handoff" and getattr(llm, "revisions", 0) == 0
+
+
+def test_unavailable_reply_checker_means_handoff_not_crash(tmp_path):
+    class BrokenCheck(FakeLlm):
+        def check_reply(self, *a, **k):
+            raise RuntimeError("429")
+    hd = FakeHd([T])
+    s = agent(tmp_path, hd, BrokenCheck(dec())).run()
+    assert hd.posts[0][0] == "handoff" and not s.failed
