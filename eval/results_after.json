@@ -1,0 +1,248 @@
+{
+ "model": "gemini-3.5-flash-lite",
+ "threshold": 0.7,
+ "verify_replies": true,
+ "score": {
+  "n": 10,
+  "accuracy": {
+   "language": 1.0,
+   "category": 0.9,
+   "priority": 0.9,
+   "action": 0.9
+  },
+  "handoff_recall": 1.0,
+  "unsafe_auto_replies": [],
+  "over_handoffs": [
+   "E04"
+  ]
+ },
+ "usage": {
+  "prompt_tokens": 10465,
+  "output_tokens": 1165,
+  "calls": 12,
+  "cache_hits": 4
+ },
+ "rows": [
+  {
+   "id": "E01",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Hi! The Roosterly app requires iOS 16 and later. Since your iPhone 8 is running iOS 15, the app is unfortunately not compatible with your device.",
+    "draft: Hi! The Roosterly app requires iOS 16 and later. Since your iPhone 8 is running iOS 15, the app is unfortunately not compatible with your device."
+   ],
+   "model_draft": "Hi! The Roosterly app requires iOS 16 and later. Since your iPhone 8 is running iOS 15, the app is unfortunately not compatible with your device.",
+   "reason": "The customer is reporting a bug with an incompatible iOS version, which is directly addressed by the mobile app requirements in the help centre.",
+   "draft_reply": "Hi! The Roosterly app requires iOS 16 and later. Since your iPhone 8 is running iOS 15, the app is unfortunately not compatible with your device."
+  },
+  {
+   "id": "E02",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Good day, you can change the VAT number for future invoices yourself under Settings > Company details.",
+    "draft: Goed dag, je kunt het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens."
+   ],
+   "model_draft": "Goed dag, je kunt het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens.",
+   "reason": "The customer wants to update their VAT number for future invoices, which is directly covered by the help centre under F06.",
+   "draft_reply": "Goed dag, je kunt het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens."
+  },
+  {
+   "id": "E03",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The customer is asking for a refund, which requires human handling according to support rules.",
+   "draft_reply": null
+  },
+  {
+   "id": "E04",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "handoff"
+   },
+   "downgrades": [
+    "wrong_language"
+   ],
+   "check_notes": [
+    "The reply contains a mixed language sentence with the English word 'Colleagues' instead of the Dutch word 'Collega's'.",
+    "back-translation: Open the shift in the app and tap 'Offer swap'. Colleagues with the same role can accept the swap. The manager approves this under Rota > Requests.",
+    "draft: Open de dienst in de app en tik op 'Ruil aanbieden'. Colleagues met dezelfde rol kunnen de ruil accepteren. De manager keurt dit goed onder Rooster > Verzoeken."
+   ],
+   "model_draft": null,
+   "reason": "The customer is asking a how-to question about swapping shifts, which is fully answered by the FAQ.",
+   "draft_reply": null
+  },
+  {
+   "id": "E05",
+   "label": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Thanks for your idea! All feature requests are collected on our public roadmap at roadmap.roosterly.nl, where you can vote on ideas. However, we cannot promise a delivery date for individual requests.",
+    "draft: Bedankt voor je idee! Alle functieverzoeken worden verzameld op onze openbare roadmap op roadmap.roosterly.nl, waar je kunt stemmen op ideeën. We kunnen echter geen leverdatum beloven voor individuele verzoeken."
+   ],
+   "model_draft": "Bedankt voor je idee! Alle functieverzoeken worden verzameld op onze openbare roadmap op roadmap.roosterly.nl, waar je kunt stemmen op ideeën. We kunnen echter geen leverdatum beloven voor individuele verzoeken.",
+   "reason": "The customer is asking for a feature (Google Calendar integration), which is covered by F10 directing feature requests to the public roadmap.",
+   "draft_reply": "Bedankt voor je idee! Alle functieverzoeken worden verzameld op onze openbare roadmap op roadmap.roosterly.nl, waar je kunt stemmen op ideeën. We kunnen echter geen leverdatum beloven voor individuele verzoeken."
+  },
+  {
+   "id": "E06",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The issue involves an error message when publishing a rota, which is not covered by the help centre FAQ and requires human support.",
+   "draft_reply": null
+  },
+  {
+   "id": "E07",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Hello! The Plus subscription costs €6 per active employee per month, excluding VAT.",
+    "draft: Hallo! Het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw."
+   ],
+   "model_draft": "Hallo! Het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw.",
+   "reason": "The customer is asking for pricing information which is fully answered by the FAQ entry on plans and prices.",
+   "draft_reply": "Hallo! Het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw."
+  },
+  {
+   "id": "E08",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The ticket is spam offering an investment scheme and requires no support action.",
+   "draft_reply": null
+  },
+  {
+   "id": "E09",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "Personal data requests (AVG/GDPR) must always be handed off to a human support agent according to company rules.",
+   "draft_reply": null
+  },
+  {
+   "id": "E10",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Good day, you can view the status of current outages and planned maintenance at status.roosterly.nl.",
+    "draft: Goedendag, je kunt de status van de huidige storingen en gepland onderhoud bekijken op status.roosterly.nl."
+   ],
+   "model_draft": "Goedendag, je kunt de status van de huidige storingen en gepland onderhoud bekijken op status.roosterly.nl.",
+   "reason": "The customer is asking about planned maintenance, which is directly answered by F11 pointing to status.roosterly.nl.",
+   "draft_reply": "Goedendag, je kunt de status van de huidige storingen en gepland onderhoud bekijken op status.roosterly.nl."
+  }
+ ]
+}
