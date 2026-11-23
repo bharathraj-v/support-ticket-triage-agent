@@ -11,6 +11,7 @@ from app.rules import evaluate, raise_priority
     ("Dreigement", "Mijn advocaat neemt contact op", "legal_threat"),
     ("Overstappen", "Anders gaan we overstappen naar een concurrent", "churn_threat"),
     ("Refund", "Please refund last month", "refund_or_dispute"),
+    ("Derde keer", "Als niemand mij belt, zeggen we op.", "churn_threat"),
 ])
 def test_flags_detected(subject, body, flag):
     assert flag in evaluate(subject, body).flags

@@ -11,10 +11,10 @@ from .helpdesk import AlreadyHandled, Helpdesk
 from .redact import redact
 from .rules import evaluate
 from .state import State
-from .validate import Outcome, fallback_note, finalize
+from .validate import FALLBACK_PREFIX, Outcome, fallback_note, finalize
 
 
-REPAIRABLE = {"wrong_language", "reply_not_supported_by_faq"}
+REPAIRABLE = {"wrong_language", "reply_not_supported_by_faq", "language_mismatch"}
 
 
 @dataclass
@@ -60,10 +60,25 @@ class Agent:
                 second = finalize(subject, d2, rules, self.hc, self.threshold, check, ticket_text)
                 if second.action == "reply":
                     second.downgrades = ["repaired:" + "+".join(outcome.downgrades)]
-                    return second, meta
+                    return self._with_note(ticket, second, rules), meta
             except Exception:
                 meta["repair_error"] = True
-        return outcome, meta
+        return self._with_note(ticket, outcome, rules), meta
+
+    def _with_note(self, ticket: dict, outcome: Outcome, rules) -> Outcome:
+        """The model often leaves the handoff note empty; ask for one so the human can act in under a minute."""
+        note = outcome.payload.get("handoff_note", "")
+        if outcome.action != "handoff" or "llm_error" in outcome.downgrades or not note.startswith(FALLBACK_PREFIX):
+            return outcome
+        try:
+            why = list(outcome.downgrades) + [f.replace("_", " ") for f in rules.flags]
+            written = self.llm.write_handoff_note(redact(ticket.get("subject") or ""), redact(ticket.get("body") or ""),
+                                                  outcome.payload, why)
+            if written and written.strip():
+                outcome.payload["handoff_note"] = redact(written.strip())
+        except Exception:
+            pass  # keep the generic fallback note: a handoff must always go out
+        return outcome
 
     def _post(self, ticket_id: str, action: str, payload: dict) -> str:
         send = {"reply": self.hd.reply, "handoff": self.hd.handoff, "close": self.hd.close}[action]

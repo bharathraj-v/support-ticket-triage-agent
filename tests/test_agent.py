@@ -31,6 +31,9 @@ class FakeLlm:
         return ReplyCheck(written_in_expected_language=ok, english_back_translation="x",
                           supported_by_faq=ok, problems=[] if ok else ["mixed language"])
 
+    def write_handoff_note(self, subject, body, payload, why):
+        return "Customer needs X; next step: Y."
+
     def revise(self, ticket, subject, body, previous, problems):
         self.revisions = getattr(self, "revisions", 0) + 1
         return self.fixed if hasattr(self, "fixed") else previous
@@ -178,3 +181,26 @@ def test_unavailable_reply_checker_means_handoff_not_crash(tmp_path):
     hd = FakeHd([T])
     s = agent(tmp_path, hd, BrokenCheck(dec())).run()
     assert hd.posts[0][0] == "handoff" and not s.failed
+
+
+def test_handoff_without_model_note_gets_a_written_note(tmp_path):
+    hd = FakeHd([{"id": "T5", "subject": "Terugbetaling", "body": "refund please"}])
+    agent(tmp_path, hd, FakeLlm(dec())).run()
+    assert hd.posts[0][2]["handoff_note"] == "Customer needs X; next step: Y."
+
+
+def test_p1_ticket_is_never_auto_replied(tmp_path):
+    hd = FakeHd([T])
+    agent(tmp_path, hd, FakeLlm(dec(priority="P1", category="bug"))).run()
+    assert hd.posts[0][0] == "handoff" and hd.posts[0][2]["priority"] == "P1"
+
+
+def test_language_label_is_corrected_by_independent_detector(tmp_path):
+    t = {"id": "T6", "subject": "Outage", "body": "Nobody in our restaurants can open the app and the staff "
+         "cannot clock in. We have a shift in an hour."}
+    hd = FakeHd([t])
+    llm = FakeLlm(dec(language="nl", priority="P3"))
+    llm.fixed = dec(language="en", priority="P3", draft_reply="Hello, see the status page.")
+    agent(tmp_path, hd, llm).run()
+    name, _, body = hd.posts[0]
+    assert body["language"] == "en" and name == "reply" and llm.revisions == 1

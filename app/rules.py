@@ -42,6 +42,7 @@ _FLAGS: dict[str, tuple[str, list[str]]] = {
         r"switch(?:ing)? to", r"look(?:ing)? for (?:an )?alternative", r"alternatief zoeken",
         r"zoeken we (?:een )?(?:ander|alternatief)", r"we (?:gaan|zijn) weg", r"nicht mehr nutzen",
         r"wechseln zu", r"verlaten", r"leave (?:you|roosterly)",
+        r"zeggen we (?:het )?(?:\w+ )?op", r"zeg(?:t|gen)? (?:het |ons )?(?:abonnement )?op", r"stoppen (?:we|wij) ermee",
     ]),
 }
 _COMPILED = {k: (prio, [re.compile(p, re.I) for p in pats]) for k, (prio, pats) in _FLAGS.items()}

@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 
 from .faq import HelpCentre
+from .lang import detect_language
 from .models import Decision
 from .redact import contains_payment_details, redact
 from .rules import RuleResult, raise_priority
@@ -18,9 +19,12 @@ class Outcome:
     check_problems: list[str] = field(default_factory=list)  # reviewer's problems, used for the repair step
 
 
+FALLBACK_PREFIX = "Automatic triage could not safely answer this ticket"
+
+
 def fallback_note(subject: str, flags: tuple[str, ...], why: str, model_reason: str = "") -> str:
     topic = ", ".join(f.replace("_", " ") for f in flags) or "needs human review"
-    return (f"Automatic triage could not safely answer this ticket ({why}). "
+    return (f"{FALLBACK_PREFIX} ({why}). "
             f"Subject: \"{redact(subject)}\". Topic flags: {topic}. "
             f"Model's read of the ticket: {redact(model_reason)} Please read the original ticket and respond.")
 
@@ -30,6 +34,8 @@ def finalize(subject: str, d: Decision, rules: RuleResult, hc: HelpCentre, thres
     """`reply_check` is a callable (language, faq_ids, reply, ticket_text) -> ReplyCheck, run only for replies."""
     downgrades: list[str] = []
     priority = raise_priority(d.priority, rules.min_priority)
+    detected = detect_language(ticket_text)
+    language = detected if detected and detected != d.language else d.language
     action = d.action
     note = d.handoff_note
     reply = d.draft_reply
@@ -44,8 +50,14 @@ def finalize(subject: str, d: Decision, rules: RuleResult, hc: HelpCentre, thres
         downgrades.append("low_confidence_close")
         action = "handoff"
     if action == "reply":
-        if not reply or not reply.strip():
+        if priority == "P1":
+            downgrades.append("p1_requires_human")  # many users blocked / security / legal: never auto-answer
+        elif not reply or not reply.strip():
             downgrades.append("empty_reply")
+        elif language != d.language:
+            downgrades.append("language_mismatch")
+            problems = [f"The ticket is written in '{language}' but the reply was drafted for '{d.language}'. "
+                        f"Set language to '{language}' and write the whole reply in it."]
         elif not faq_ids:
             downgrades.append("no_valid_faq_id")
         elif d.confidence < threshold:
@@ -67,7 +79,7 @@ def finalize(subject: str, d: Decision, rules: RuleResult, hc: HelpCentre, thres
         if downgrades:
             action = "handoff"
 
-    base = {"language": d.language, "category": d.category, "priority": priority,
+    base = {"language": language, "category": d.category, "priority": priority,
             "reason": redact(d.reason), "confidence": d.confidence}
     if action == "reply":
         payload = {**base, "draft_reply": reply}

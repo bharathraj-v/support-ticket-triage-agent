@@ -27,3 +27,7 @@ class ReplyCheck(BaseModel):
     english_back_translation: str
     supported_by_faq: bool = Field(description="Every claim in the reply is stated in the cited help centre entries")
     problems: list[str] = Field(default_factory=list)
+
+
+class HandoffNote(BaseModel):
+    note: str = Field(description="English note for the human support agent")
