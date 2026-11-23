@@ -7,6 +7,8 @@ import argparse
 import json
 from pathlib import Path
 
+from tqdm import tqdm
+
 from app.agent import Agent
 from app.config import load_settings
 from app.faq import load_helpcentre
@@ -59,7 +61,9 @@ def main() -> None:
                   s.confidence_threshold, not args.no_verify)
 
     rows = []
-    for ex in load_examples(hd, args.refresh):
+    bar = tqdm(load_examples(hd, args.refresh), desc="eval", unit="ticket")
+    for ex in bar:
+        bar.set_postfix(id=ex["id"], llm_calls=llm.usage.calls)
         outcome, meta = agent.decide(ex)
         pred = {k: outcome.payload[k] for k in ("language", "category", "priority")}
         pred["action"] = outcome.action

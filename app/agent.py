@@ -4,6 +4,8 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from tqdm import tqdm
+
 from .faq import HelpCentre
 from .helpdesk import AlreadyHandled, Helpdesk
 from .redact import redact
@@ -22,9 +24,10 @@ class RunSummary:
 
 class Agent:
     def __init__(self, helpdesk: Helpdesk, llm, helpcentre: HelpCentre, state: State, log_path: Path,
-                 threshold: float, verify_replies: bool = True):
+                 threshold: float, verify_replies: bool = True, progress: bool = False):
         self.hd, self.llm, self.hc, self.state = helpdesk, llm, helpcentre, state
         self.log_path, self.threshold, self.verify = log_path, threshold, verify_replies
+        self.progress = progress
 
     # --- one ticket ---
     def decide(self, ticket: dict) -> tuple[Outcome, dict]:
@@ -82,7 +85,9 @@ class Agent:
     # --- whole run ---
     def run(self) -> RunSummary:
         summary = RunSummary()
-        for ticket in list(self.hd.iter_tickets("open")):
+        bar = tqdm(list(self.hd.iter_tickets("open")), desc="tickets", unit="ticket", disable=not self.progress)
+        for ticket in bar:
+            bar.set_postfix(id=ticket.get("id"))
             summary.total += 1
             try:
                 outcome = self.handle(ticket)
