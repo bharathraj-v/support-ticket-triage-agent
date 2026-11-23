@@ -1,0 +1,242 @@
+{
+ "model": "gemini-3.5-flash-lite",
+ "threshold": 0.7,
+ "verify_replies": true,
+ "score": {
+  "n": 10,
+  "accuracy": {
+   "language": 1.0,
+   "category": 1.0,
+   "priority": 1.0,
+   "action": 0.9
+  },
+  "handoff_recall": 1.0,
+  "unsafe_auto_replies": [],
+  "over_handoffs": [
+   "E01"
+  ]
+ },
+ "usage": {
+  "prompt_tokens": 20376,
+  "output_tokens": 1749,
+  "calls": 17,
+  "cache_hits": 0
+ },
+ "rows": [
+  {
+   "id": "E01",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The ticket reports an app crash on an unsupported iOS version, which requires a human agent to review.",
+   "draft_reply": null
+  },
+  {
+   "id": "E02",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Hi, you can change the company name, address or VAT number for future invoices yourself under Settings > Company details.",
+    "draft: Dag, je kunt de bedrijfsnaam, het adres of het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens."
+   ],
+   "model_draft": "Dag, je kunt de bedrijfsnaam, het adres of het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens.",
+   "reason": "The customer is asking how to update their VAT number for future invoices, which is directly answered by F06.",
+   "draft_reply": "Dag, je kunt de bedrijfsnaam, het adres of het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens."
+  },
+  {
+   "id": "E03",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The customer is asking for a refund, which is a rule requiring a human agent.",
+   "draft_reply": null
+  },
+  {
+   "id": "E04",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Open the shift in the app and tap \"Offer swap\". Colleagues with the same role can accept the swap. The manager approves it under Rota > Requests.",
+    "draft: Open de dienst in de app en tik op \"Ruil aanbieden\". Collegae met dezelfde rol kunnen de ruil accepteren. De manager keurt het goed onder Rooster > Verzoeken."
+   ],
+   "model_draft": "Open de dienst in de app en tik op \"Ruil aanbieden\". Collegae met dezelfde rol kunnen de ruil accepteren. De manager keurt het goed onder Rooster > Verzoeken.",
+   "reason": "The customer is asking a simple how-to question about swapping shifts, which is fully answered by F03.",
+   "draft_reply": "Open de dienst in de app en tik op \"Ruil aanbieden\". Collegae met dezelfde rol kunnen de ruil accepteren. De manager keurt het goed onder Rooster > Verzoeken."
+  },
+  {
+   "id": "E05",
+   "label": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Thank you for your idea. We read every idea and place feature requests on our public roadmap at roadmap.roosterly.nl, where you can vote on ideas. However, we cannot promise a delivery date for individual requests.",
+    "draft: Bedankt voor je idee. We lezen elk idee en plaatsen feature requests op onze publieke roadmap op roadmap.roosterly.nl, waar je op ideeën kunt stemmen. We kunnen echter geen levertijd beloven voor individuele verzoeken."
+   ],
+   "model_draft": "Bedankt voor je idee. We lezen elk idee en plaatsen feature requests op onze publieke roadmap op roadmap.roosterly.nl, waar je op ideeën kunt stemmen. We kunnen echter geen levertijd beloven voor individuele verzoeken.",
+   "reason": "The customer is asking for a new feature (Google Calendar integration), which is covered by the feature request help centre entry.",
+   "draft_reply": "Bedankt voor je idee. We lezen elk idee en plaatsen feature requests op onze publieke roadmap op roadmap.roosterly.nl, waar je op ideeën kunt stemmen. We kunnen echter geen levertijd beloven voor individuele verzoeken."
+  },
+  {
+   "id": "E06",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The customer is experiencing an error when publishing the rota and the help centre does not contain an entry to resolve this specific error, requiring a human agent.",
+   "draft_reply": null
+  },
+  {
+   "id": "E07",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: Dear customer, the Plus subscription costs €6 per active employee per month, excluding VAT. For 25 active employees, the calculation is: 25 x €6 = €150 per month, excluding VAT.",
+    "draft: Beste klant, het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw. Voor 25 actieve medewerkers is de berekening: 25 x €6 = €150 per maand, exclusief btw."
+   ],
+   "model_draft": "Beste klant, het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw. Voor 25 actieve medewerkers is de berekening: 25 x €6 = €150 per maand, exclusief btw.",
+   "reason": "The customer is asking about pricing for the Plus plan, which is fully answered by the help centre and does not trigger any human-only rules.",
+   "draft_reply": "Beste klant, het Plus-abonnement kost €6 per actieve medewerker per maand, exclusief btw. Voor 25 actieve medewerkers is de berekening: 25 x €6 = €150 per maand, exclusief btw."
+  },
+  {
+   "id": "E08",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "The ticket is spam offering a crypto investment scheme and does not contain a legitimate support question.",
+   "draft_reply": null
+  },
+  {
+   "id": "E09",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "check_notes": [],
+   "model_draft": null,
+   "reason": "Personal data requests (AVG) must always be handled by a human according to support rules.",
+   "draft_reply": null
+  },
+  {
+   "id": "E10",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "check_notes": [
+    "back-translation: You can check the status of current outages and planned maintenance on status.roosterly.nl.",
+    "draft: Je kunt de status van huidige storingen en gepland onderhoud bekijken op status.roosterly.nl."
+   ],
+   "model_draft": "Je kunt de status van huidige storingen en gepland onderhoud bekijken op status.roosterly.nl.",
+   "reason": "The customer is asking about planned maintenance, which is directly answered by the help centre entry on outages and maintenance.",
+   "draft_reply": "Je kunt de status van huidige storingen en gepland onderhoud bekijken op status.roosterly.nl."
+  }
+ ]
+}

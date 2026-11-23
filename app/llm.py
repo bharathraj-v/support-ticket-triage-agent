@@ -46,6 +46,8 @@ DECISION
   P1 = many users blocked right now, or a security or legal risk.
 - Never promise an action or outcome ("we will fix it", "we will pass it on", "we will look into it"). A reply
   states only what the cited help centre entries say. A cosmetic bug or a problem the help centre does not cover is a handoff.
+  If an entry states a requirement or limit that explains the reported problem (for example a minimum version),
+  reply with that explanation.
 - Choose reply or handoff by whether the help centre answers the ticket, never by its category. A bug report
   can be answered with a reply when a help centre entry explains the cause or the fix; hand off when it does not.
 - If the ticket gives numbers (for example 25 employees), work out the total from the help centre prices in the reply
