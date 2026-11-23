@@ -30,6 +30,7 @@ uvicorn app.main:app            # optional: same agent over HTTP (POST /run, GET
 2. **Rules in code, not just in the prompt.** Refunds, cancellations, GDPR/AVG, security, legal threats and churn
    threats (NL/EN/DE keywords, `app/rules.py`) force a handoff whatever the model says, and raise priority.
    A reply must also cite a real FAQ id, clear a confidence threshold (0.7) and contain no card/IBAN, else handoff.
+   P1 tickets are never auto-answered, and an independent word-list check (`app/lang.py`) can overrule the model's language label.
 3. **Eval-driven, small and explainable.** Labels come from the helpdesk's human-labelled examples; the model under
    test never writes labels. Every LLM call is saved to `state/llm_cache.jsonl`, so runs resume and re-runs are free.
 
@@ -46,10 +47,12 @@ Built with Claude Code: I directed the design and reviewed every change; the pro
 - **Security**: keys only from environment variables (`.env` is gitignored). Ticket text is untrusted: it sits inside
   `<ticket>` tags with an instruction to treat it as data, output is schema-validated, and rules and validators run
   in code after the model. Card numbers/IBANs are masked before the model, the logs and replies. One log line per ticket
-  in `logs/run.jsonl` (ids, decision, confidence, latency; no ticket text).
+  in `logs/run.jsonl` (ids, decision, confidence, latency; no ticket text). The scored run's log is `logs/final_run.jsonl`.
+  The free Gemini tier allows 15 calls/min: calls are paced, a 429's "retry in N s" is honoured, and an unavailable
+  reply checker means handoff, never an unchecked reply.
 
 ## Eval and fix
-10 human-labelled examples, `gemini-3.5-flash-lite`:
+10 human-labelled examples, `gemini-3.5-flash-lite` (`eval/results_before.json` vs `eval/results_final_v2.json`):
 
 | | Baseline | Final |
 |---|---|---|
@@ -62,16 +65,21 @@ Built with Claude Code: I directed the design and reviewed every change; the pro
 
 **The fix:** all 3 over-handoffs came from the reply checker rejecting correct answers, because it judged them against
 the FAQ alone and flagged facts the customer had written themselves. Giving it the ticket took action accuracy to 90%
-(`results_after.json`). Remaining misses were then fixed with a one-shot repair of rejected drafts, and prompt
-guidance for category, priority and totals (`results_final.json`). One tuning step regressed E06 before I fixed it.
-**Caveat:** I tuned on the same 10 examples I score on, so 100% is optimistic; 10 tickets is also very small.
+(`results_after.json`). A one-shot repair of rejected drafts, plus prompt guidance for category, priority (judged at
+company level) and totals, fixed the rest. Two tuning steps regressed one ticket each (E06, E01) before I fixed them.
+Reading the 30 practice decisions before the scored run found four more issues, now fixed: an English ticket answered
+in Dutch (hence the language check), an outage ticket auto-answered (P1 now goes to a human), a reply promising a
+fix the help centre never promised, and empty handoff notes (a note is now always written).
+**Caveat:** I tuned on the same 10 examples I score on, so 100% is optimistic, and 10 tickets is very small.
 
-**Cost per 100 tickets:** the final eval used 21,816 input + 1,977 output tokens for 10 tickets (18 calls, including
-replies' checks and repairs) = 218,160 + 19,770 per 100. At $0.30 / $2.50 per 1M tokens
-(third-party listings, not checked against Google's page): 0.218 × 0.30 + 0.0198 × 2.50 ≈ **$0.115 (about €0.11)**.
+**Scored run:** reset, then one pass over all 30 tickets: 13 replies, 15 handoffs, 2 closes, 0 failures, no repeats.
+
+**Cost per 100 tickets:** the 30-ticket pass used about 65k input + 5.6k output tokens (53 calls: decision, reply check,
+repairs, handoff notes) = about 218k + 18.7k per 100. At $0.30 / $2.50 per 1M tokens (third-party listings, not checked
+against Google's page): 0.218 × 0.30 + 0.0187 × 2.50 ≈ **$0.11 (about €0.10)**.
 
 ## What I would improve
 Next: a held-out labelled set so tuning and scoring use different tickets, and a different model for the reply checker
-so it doesn't share the drafter's blind spots. Also a rate-aware worker pool; the run is sequential (~10 s/ticket).
+so it doesn't share the drafter's blind spots. Also a rate-aware worker pool; the run is sequential (~10 s/ticket on the free tier).
 **One thing I'd change in the brief:** define the priority scale for a *company* versus a *single user* ("one customer
 blocked" was ambiguous: it decided E01 and E06), and define "unsure" numerically instead of leaving it open.
