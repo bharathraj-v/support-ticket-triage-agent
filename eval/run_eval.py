@@ -68,7 +68,7 @@ def main() -> None:
         pred = {k: outcome.payload[k] for k in ("language", "category", "priority")}
         pred["action"] = outcome.action
         rows.append({"id": ex["id"], "label": {k: ex["label"][k] for k in FIELDS}, "pred": pred,
-                     "downgrades": outcome.downgrades, "reason": outcome.payload["reason"],
+                     "downgrades": outcome.downgrades, "check_notes": outcome.notes, "model_draft": outcome.payload.get("draft_reply"), "reason": outcome.payload["reason"],
                      "draft_reply": outcome.payload.get("draft_reply")})
     result = {"model": s.gemini_model, "threshold": s.confidence_threshold, "verify_replies": not args.no_verify,
               "score": score(rows), "usage": llm.usage.__dict__, "rows": rows}

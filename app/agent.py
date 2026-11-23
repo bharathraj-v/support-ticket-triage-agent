@@ -47,7 +47,7 @@ class Agent:
                        "handoff_note": fallback_note(subject, rules.flags, "model error")}
             return Outcome("handoff", payload, ["llm_error"], [], 0.0), meta
         check = self.llm.check_reply if self.verify else None
-        return finalize(subject, d, rules, self.hc, self.threshold, check), meta
+        return finalize(subject, d, rules, self.hc, self.threshold, check, redact(f"{subject}\n{body}")), meta
 
     def _post(self, ticket_id: str, action: str, payload: dict) -> str:
         send = {"reply": self.hd.reply, "handoff": self.hd.handoff, "close": self.hd.close}[action]

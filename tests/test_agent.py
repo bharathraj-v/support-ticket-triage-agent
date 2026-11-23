@@ -26,7 +26,7 @@ class FakeLlm:
             raise self.decision
         return self.decision
 
-    def check_reply(self, language, faq_ids, reply):
+    def check_reply(self, language, faq_ids, reply, ticket_text=""):
         return ReplyCheck(written_in_expected_language=self.ok, english_back_translation="x",
                           supported_by_faq=self.ok)
 
