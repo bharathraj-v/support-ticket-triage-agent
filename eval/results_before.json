@@ -1,0 +1,214 @@
+{
+ "model": "gemini-3.5-flash-lite",
+ "threshold": 0.7,
+ "verify_replies": true,
+ "score": {
+  "n": 10,
+  "accuracy": {
+   "language": 1.0,
+   "category": 1.0,
+   "priority": 0.9,
+   "action": 0.7
+  },
+  "handoff_recall": 1.0,
+  "unsafe_auto_replies": [],
+  "over_handoffs": [
+   "E01",
+   "E05",
+   "E07"
+  ]
+ },
+ "usage": {
+  "prompt_tokens": 15243,
+  "output_tokens": 1863,
+  "calls": 16
+ },
+ "rows": [
+  {
+   "id": "E01",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P3",
+    "action": "handoff"
+   },
+   "downgrades": [
+    "reply_not_supported_by_faq"
+   ],
+   "reason": "The customer is reporting a crash on an unsupported iOS version, which is directly addressed by the mobile app requirements FAQ.",
+   "draft_reply": null
+  },
+  {
+   "id": "E02",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "reason": "The customer is asking how to update their VAT number on invoices, which is directly covered by the help centre entry F06.",
+   "draft_reply": "Goedendag, u kunt het btw-nummer voor toekomstige facturen zelf aanpassen onder Instellingen > Bedrijfsgegevens."
+  },
+  {
+   "id": "E03",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "reason": "The customer is asking for a refund, which requires a human agent according to the support rules.",
+   "draft_reply": null
+  },
+  {
+   "id": "E04",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "reason": "The customer is asking a simple how-to question about swapping shifts, which is fully answered by F03.",
+   "draft_reply": "Hoi! Om een dienst te ruilen, open je de dienst in de app en tik je op 'Ruil aanbieden'. Collega's met dezelfde rol kunnen de ruil vervolgens accepteren. De manager keurt dit goed onder Rooster > Verzoeken (tenzij de manager-goedkeuring is uitgeschakeld onder Instellingen > Rooster)."
+  },
+  {
+   "id": "E05",
+   "label": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "feature_request",
+    "priority": "P4",
+    "action": "handoff"
+   },
+   "downgrades": [
+    "reply_not_supported_by_faq"
+   ],
+   "reason": "The customer is requesting a feature (Google Calendar integration), which is covered by F10 directing feature requests to the public roadmap.",
+   "draft_reply": null
+  },
+  {
+   "id": "E06",
+   "label": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "en",
+    "category": "bug",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "reason": "The customer is experiencing an error when publishing a rota, which is not covered by the FAQ and requires human support.",
+   "draft_reply": null
+  },
+  {
+   "id": "E07",
+   "label": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "billing",
+    "priority": "P4",
+    "action": "handoff"
+   },
+   "downgrades": [
+    "reply_not_supported_by_faq"
+   ],
+   "reason": "The customer is asking for pricing details which are directly available in the help centre under F05.",
+   "draft_reply": null
+  },
+  {
+   "id": "E08",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P4",
+    "action": "close"
+   },
+   "downgrades": [],
+   "reason": "The ticket is spam offering a crypto investment scheme, so it should be closed immediately.",
+   "draft_reply": null
+  },
+  {
+   "id": "E09",
+   "label": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "other",
+    "priority": "P2",
+    "action": "handoff"
+   },
+   "downgrades": [],
+   "reason": "The customer is making a personal data access request under GDPR (AVG), which per the client's rules must always be handed off to a human.",
+   "draft_reply": null
+  },
+  {
+   "id": "E10",
+   "label": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "pred": {
+    "language": "nl",
+    "category": "question",
+    "priority": "P4",
+    "action": "reply"
+   },
+   "downgrades": [],
+   "reason": "The customer is asking about planned maintenance, which is fully answered by FAQ entry F11 pointing to status.roosterly.nl.",
+   "draft_reply": "Hoi! Voor de huidige storingen en gepland onderhoud kun je terecht op status.roosterly.nl."
+  }
+ ]
+}
