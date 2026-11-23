@@ -14,6 +14,9 @@ from .state import State
 from .validate import Outcome, fallback_note, finalize
 
 
+REPAIRABLE = {"wrong_language", "reply_not_supported_by_faq"}
+
+
 @dataclass
 class RunSummary:
     total: int = 0
@@ -47,7 +50,20 @@ class Agent:
                        "handoff_note": fallback_note(subject, rules.flags, "model error")}
             return Outcome("handoff", payload, ["llm_error"], [], 0.0), meta
         check = self.llm.check_reply if self.verify else None
-        return finalize(subject, d, rules, self.hc, self.threshold, check, redact(f"{subject}\n{body}")), meta
+        ticket_text = redact(f"{subject}\n{body}")
+        outcome = finalize(subject, d, rules, self.hc, self.threshold, check, ticket_text)
+        # A reply the reviewer rejected for a fixable reason gets one repair attempt before we give up on it.
+        if (d.action == "reply" and outcome.action == "handoff" and outcome.check_problems
+                and not rules.force_handoff and set(outcome.downgrades) <= REPAIRABLE):
+            try:
+                d2 = self.llm.revise(ticket, redact(subject), redact(body), d, outcome.check_problems)
+                second = finalize(subject, d2, rules, self.hc, self.threshold, check, ticket_text)
+                if second.action == "reply":
+                    second.downgrades = ["repaired:" + "+".join(outcome.downgrades)]
+                    return second, meta
+            except Exception:
+                meta["repair_error"] = True
+        return outcome, meta
 
     def _post(self, ticket_id: str, action: str, payload: dict) -> str:
         send = {"reply": self.hd.reply, "handoff": self.hd.handoff, "close": self.hd.close}[action]

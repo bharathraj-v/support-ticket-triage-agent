@@ -33,6 +33,15 @@ DECISION
   * handoff: anything else, any client rule that requires a human, or when unsure. Write handoff_note in
     English: who the customer is, what they want, what is relevant, and what the agent should do next.
   * close: only spam or an empty/meaningless ticket.
+- category guide: bug = the app misbehaves or crashes. billing = prices, plans, invoices, payments, VAT details
+  (any money topic, even a simple price question). feature_request = the customer asks for something new.
+  question = how-to or usage question about the product. other = anything else.
+- priority guide: a plain how-to or information question is P4 even when the topic is invoices or prices. Use P2
+  only when money or the contract is actually at stake (dispute, wrong charge, cancellation) or one customer is
+  blocked. P3 when something is wrong but a workaround exists. P4 for ideas and cosmetic issues.
+- If the ticket gives numbers (for example 25 employees), work out the total from the help centre prices in the reply
+  and show the calculation (for example 25 x EUR 6 = EUR 150 per month, excl. VAT).
+- Write the whole reply in one language: no words of another language mixed in (use "collega's", not "colleagues").
 - Feature requests may get a reply based on F10 (public roadmap, no delivery promise).
 - confidence: lower it when the ticket is ambiguous, mixes topics, or the help centre only partly covers it.
 - reason: one or two English sentences.
@@ -143,6 +152,17 @@ class Llm:
         prompt = (
             f"Channel: {ticket.get('channel')}\nCustomer plan: {ticket.get('customer_plan')}\n"
             f"<ticket>\nSubject: {redacted_subject}\n\n{redacted_body}\n</ticket>")
+        return self._generate(prompt, SYSTEM_PROMPT.format(helpcentre=self.helpcentre.raw), Decision)
+
+    def revise(self, ticket: dict, redacted_subject: str, redacted_body: str, previous: Decision,
+               problems: list[str]) -> Decision:
+        """One repair attempt: same ticket, plus the reviewer's problems with the previous draft."""
+        prompt = (
+            f"Channel: {ticket.get('channel')}\nCustomer plan: {ticket.get('customer_plan')}\n"
+            f"<ticket>\nSubject: {redacted_subject}\n\n{redacted_body}\n</ticket>\n\n"
+            f"Your previous answer:\n{previous.model_dump_json()}\n\n"
+            "A reviewer found these problems with the draft reply:\n- " + "\n- ".join(problems) +
+            "\n\nReturn a corrected full answer. Fix only those problems; keep everything else.")
         return self._generate(prompt, SYSTEM_PROMPT.format(helpcentre=self.helpcentre.raw), Decision)
 
     def check_reply(self, language: str, faq_ids: list[str], reply: str, ticket_text: str = "") -> ReplyCheck:

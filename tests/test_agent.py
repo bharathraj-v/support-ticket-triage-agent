@@ -27,8 +27,13 @@ class FakeLlm:
         return self.decision
 
     def check_reply(self, language, faq_ids, reply, ticket_text=""):
-        return ReplyCheck(written_in_expected_language=self.ok, english_back_translation="x",
-                          supported_by_faq=self.ok)
+        ok = self.ok if "BAD" not in reply else False
+        return ReplyCheck(written_in_expected_language=ok, english_back_translation="x",
+                          supported_by_faq=ok, problems=[] if ok else ["mixed language"])
+
+    def revise(self, ticket, subject, body, previous, problems):
+        self.revisions = getattr(self, "revisions", 0) + 1
+        return self.fixed if hasattr(self, "fixed") else previous
 
 
 class FakeHd:
@@ -140,3 +145,27 @@ def test_log_has_one_line_per_ticket_without_ticket_text(tmp_path):
     agent(tmp_path, hd, FakeLlm(dec())).run()
     lines = (tmp_path / "log.jsonl").read_text().splitlines()
     assert len(lines) == 1 and "medewerker" not in lines[0].lower()
+
+
+def test_repair_fixes_a_rejected_reply_instead_of_escalating(tmp_path):
+    llm = FakeLlm(dec(draft_reply="BAD Colleagues"))
+    llm.fixed = dec(draft_reply="Collega's kunnen de ruil accepteren.")
+    hd = FakeHd([T])
+    agent(tmp_path, hd, llm).run()
+    assert hd.posts[0][0] == "reply" and llm.revisions == 1
+    assert "Collega" in hd.posts[0][2]["draft_reply"]
+
+
+def test_repair_that_still_fails_ends_in_handoff_after_one_attempt(tmp_path):
+    llm = FakeLlm(dec(draft_reply="BAD one"))
+    llm.fixed = dec(draft_reply="BAD two")
+    hd = FakeHd([T])
+    agent(tmp_path, hd, llm).run()
+    assert hd.posts[0][0] == "handoff" and llm.revisions == 1
+
+
+def test_rule_flagged_ticket_is_never_repaired(tmp_path):
+    llm = FakeLlm(dec(draft_reply="BAD"))
+    hd = FakeHd([{"id": "T9", "subject": "Terugbetaling", "body": "refund please"}])
+    agent(tmp_path, hd, llm).run()
+    assert hd.posts[0][0] == "handoff" and getattr(llm, "revisions", 0) == 0
