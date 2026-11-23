@@ -14,7 +14,7 @@ def build_agent(verify_replies: bool = True) -> tuple[Agent, Llm, Helpdesk, Stat
     s = load_settings()
     hc = load_helpcentre(s.faq_path)
     hd = Helpdesk(s.helpdesk_url, s.helpdesk_key, s.candidate_email)
-    llm = Llm(s.gemini_api_key, s.gemini_model, hc)
+    llm = Llm(s.gemini_api_key, s.gemini_model, hc, cache_path=s.llm_cache_path)
     state = State(s.state_path)
     return Agent(hd, llm, hc, state, s.log_path, s.confidence_threshold, verify_replies, progress=True), llm, hd, state
 

@@ -27,6 +27,7 @@ class Settings:
     state_path: Path
     log_path: Path
     faq_path: Path
+    llm_cache_path: Path
 
 
 def load_settings(need_llm: bool = True) -> Settings:
@@ -40,4 +41,5 @@ def load_settings(need_llm: bool = True) -> Settings:
         state_path=ROOT / "state" / "decisions.json",
         log_path=ROOT / "logs" / "run.jsonl",
         faq_path=ROOT / "data" / "helpcentre.md",
+        llm_cache_path=ROOT / "state" / "llm_cache.jsonl",
     )

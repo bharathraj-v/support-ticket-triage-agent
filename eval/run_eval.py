@@ -56,14 +56,14 @@ def main() -> None:
     s = load_settings()
     hc = load_helpcentre(s.faq_path)
     hd = Helpdesk(s.helpdesk_url, s.helpdesk_key, s.candidate_email)
-    llm = Llm(s.gemini_api_key, s.gemini_model, hc)
+    llm = Llm(s.gemini_api_key, s.gemini_model, hc, cache_path=s.llm_cache_path)
     agent = Agent(hd, llm, hc, State(HERE / ".eval_state.json"), HERE / ".eval_log.jsonl",
                   s.confidence_threshold, not args.no_verify)
 
     rows = []
     bar = tqdm(load_examples(hd, args.refresh), desc="eval", unit="ticket")
     for ex in bar:
-        bar.set_postfix(id=ex["id"], llm_calls=llm.usage.calls)
+        bar.set_postfix(id=ex["id"], llm_calls=llm.usage.calls, cached=llm.usage.cache_hits)
         outcome, meta = agent.decide(ex)
         pred = {k: outcome.payload[k] for k in ("language", "category", "priority")}
         pred["action"] = outcome.action
