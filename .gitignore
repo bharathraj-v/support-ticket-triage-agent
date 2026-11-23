@@ -6,3 +6,5 @@ __pycache__/
 state/
 logs/*.jsonl
 !logs/final_run.jsonl
+.eval_state.json
+.eval_log.jsonl
