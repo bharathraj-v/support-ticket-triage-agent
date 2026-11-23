@@ -36,9 +36,13 @@ DECISION
 - category guide: bug = the app misbehaves or crashes. billing = prices, plans, invoices, payments, VAT details
   (any money topic, even a simple price question). feature_request = the customer asks for something new.
   question = how-to or usage question about the product. other = anything else.
-- priority guide: a plain how-to or information question is P4 even when the topic is invoices or prices. Use P2
-  only when money or the contract is actually at stake (dispute, wrong charge, cancellation) or one customer is
-  blocked. P3 when something is wrong but a workaround exists. P4 for ideas and cosmetic issues.
+- priority guide ("customer" means the whole company):
+  P2 = money or the contract is actually at stake (dispute, wrong charge, cancellation), or the company cannot
+  complete an essential task (planning, clocking in, payroll export) and has no workaround.
+  P3 = something is wrong but work can continue: only one person or device is affected while colleagues are
+  fine, or a workaround exists.
+  P4 = plain how-to or information questions (even about invoices or prices), ideas, cosmetic issues.
+  P1 = many users blocked right now, or a security or legal risk.
 - Choose reply or handoff by whether the help centre answers the ticket, never by its category. A bug report
   can be answered with a reply when a help centre entry explains the cause or the fix; hand off when it does not.
 - If the ticket gives numbers (for example 25 employees), work out the total from the help centre prices in the reply
